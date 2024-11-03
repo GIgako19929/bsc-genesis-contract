@@ -1,5 +1,32 @@
 name: Compare genesis with bytecode files from BSC repo
+on:name: Check Bytecode
+
 on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-bytecode:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        npm install
+        npm install ts-node -g
+
+    - name: Run bytecode check
+      run: |
+        export HARDFORK=pascal
+        export BSC_URL=https://github.com/bnb-chain/bsc/pull/2692/commits/f7ab40e46171af937a70767bb0221653d574eafe
+        ts-node scripts/check-bsc-hardfork-bytecode.ts
   push:
     branches:
       - master
@@ -37,7 +64,7 @@ jobs:
         run: |
           npm install ts-node -g
           npm install
-
+                  
       - name: Extract BSC commitId and hardfork name from PR description
         uses: actions/github-script@v6
         id: extract_pr_description
